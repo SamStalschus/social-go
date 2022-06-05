@@ -1,2 +1,2 @@
 # social-go
-API of social media management (for studing)
+## API of social media management (for studing)
