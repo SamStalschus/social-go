@@ -1,6 +1,7 @@
 package entrypoint
 
 import (
+	"net/http"
 	"social-go/cmd/api/core/usecase"
 
 	"github.com/gin-gonic/gin"
@@ -19,7 +20,9 @@ func NewUserController() *UserController {
 }
 
 func (controller *UserController) CreateUser(c *gin.Context) {
-	controller.createUser.Execute("Samuca")
+	response := controller.createUser.Execute("Samuca")
+
+	c.JSON(http.StatusCreated, response)
 }
 
 func (controller *UserController) GetUser(c *gin.Context) {
@@ -27,13 +30,13 @@ func (controller *UserController) GetUser(c *gin.Context) {
 }
 
 func (controller *UserController) GetUsers(c *gin.Context) {
-	controller.getUser.Execute()
+	controller.getUsers.Execute()
 }
 
 func (controller *UserController) UpdateUser(c *gin.Context) {
-	controller.getUser.Execute()
+	controller.updateUser.Execute()
 }
 
 func (controller *UserController) DeleteUser(c *gin.Context) {
-	controller.getUser.Execute()
+	controller.deleteUser.Execute()
 }
