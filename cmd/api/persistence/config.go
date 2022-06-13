@@ -21,7 +21,6 @@ func GetConnectionDatabase() *ConnectionData {
 
 	connectionData := ConnectionData{}
 
-	fmt.Println(scope)
 	if scope == statics.ScopeLocal {
 		return connectionData.setupLocalConnectionData()
 	}
