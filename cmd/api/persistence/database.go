@@ -15,9 +15,11 @@ func NewConnectionDB() (*gorm.DB, error) {
 	client, dbError := gorm.Open(connectionData.Dialect, GetConnectionString(connectionData))
 
 	if dbError != nil {
-		fmt.Println(dbError)
+		// TODO: Handling error
 		log.Fatal("Error to connect in database")
 	}
+
+	client.SingularTable(true)
 
 	return client, nil
 }

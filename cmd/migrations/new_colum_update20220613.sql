@@ -1,0 +1,1 @@
+ALTER TABLE user ADD COLUMN updated_at timestamp after created_at;
