@@ -1,7 +1,10 @@
 package entrypoint
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
+	"social-go/cmd/api/core/model"
 	"social-go/cmd/api/core/usecase"
 
 	"github.com/gin-gonic/gin"
@@ -15,13 +18,32 @@ type UserController struct {
 	deleteUser usecase.DeleteUser
 }
 
-func NewUserController() *UserController {
-	return &UserController{}
+func NewUserController(createUser usecase.CreateUser) *UserController {
+	return &UserController{
+		createUser: createUser,
+	}
 }
 
 func (controller *UserController) CreateUser(c *gin.Context) {
-	response := controller.createUser.Execute("Samuca")
 
+	jsonData, err := ioutil.ReadAll(c.Request.Body)
+	if err != nil {
+		// TODO: Handler api errors
+	}
+
+	var user model.User
+
+	err = json.Unmarshal(jsonData, &user)
+	if err != nil {
+		// TODO: Handler api errors
+	}
+
+	response, err := controller.createUser.Execute(user)
+
+	if err != nil {
+		// TODO: Handler api errors
+		// c.JSON(err.Status())
+	}
 	c.JSON(http.StatusCreated, response)
 }
 

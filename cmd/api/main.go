@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"social-go/cmd/api/app"
+	"social-go/cmd/api/config"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,6 +25,8 @@ func main() {
 }
 
 func run(port string) error {
+
+	config.SetupEnvironment()
 
 	handlers := app.InitializeHandlers()
 
