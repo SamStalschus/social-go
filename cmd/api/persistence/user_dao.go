@@ -1,8 +1,10 @@
 package persistence
 
 import (
+	"errors"
 	"log"
 	"social-go/cmd/api/core/model"
+	apierrors "social-go/cmd/api/utils/err"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -28,7 +30,7 @@ func NewUserDao(db *gorm.DB) *UserDao {
 	}
 }
 
-func (userDao *UserDao) Save(userToSave *model.User) (*model.User, error) {
+func (userDao *UserDao) Save(userToSave *model.User) (*model.User, apierrors.ApiError) {
 
 	newUser := &user{
 		CreatedAt: time.Now(),
@@ -39,10 +41,60 @@ func (userDao *UserDao) Save(userToSave *model.User) (*model.User, error) {
 	}
 
 	if err := userDao.db.Create(newUser).Error; err != nil {
-		log.Fatal("Error to create a new user.")
+		return nil, apierrors.NewBadRequestApiError("Error to create a new user." + err.Error())
 	}
 
 	return parseEntity(newUser), nil
+}
+
+func (userDao *UserDao) Update(userToUpdate *model.User) (*model.User, error) {
+	var user user
+
+	// var dbError APIERROR
+
+	err := userDao.db.First(&user, userToUpdate.ID).Error
+	switch {
+	case gorm.IsRecordNotFoundError(err):
+		// TODO: Error handling
+		// DBERROR
+		log.Fatal("User not found!")
+	case err != nil:
+		// TODO: Error handling
+		// DBERROR
+		log.Fatal("Error to finding user!")
+	default:
+		user.Name = userToUpdate.Name
+		user.Username = userToUpdate.Username
+		if err = userDao.db.Save(&user).Error; err != nil {
+			// TODO: Error handling
+			log.Fatal("Error to finding user!")
+		}
+	}
+
+	// if dbError != nil {
+	// 	return nil, dbError
+	// }
+
+	return parseEntity(&user), nil
+}
+
+func (userDao *UserDao) Get(id int) (*model.User, error) {
+	var user user
+
+	var dbError error
+
+	if err := userDao.db.First(&user, id).Error; gorm.IsRecordNotFoundError(err) {
+		dbError = errors.New("Error handling")
+	} else if err != nil {
+		dbError = errors.New("Error handling")
+	}
+
+	if dbError != nil {
+		return nil, dbError
+	}
+
+	return parseEntity(&user), nil
+
 }
 
 func parseEntity(row *user) *model.User {

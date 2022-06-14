@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"social-go/cmd/api/core/model"
 	"social-go/cmd/api/core/usecase"
+	apierrors "social-go/cmd/api/utils/err"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,21 +29,26 @@ func (controller *UserController) CreateUser(c *gin.Context) {
 
 	jsonData, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
-		// TODO: Handler api errors
+		c.JSON(http.StatusBadRequest,
+			apierrors.NewBadRequestApiError("Bad Request - Failed read to request body"))
+		return
 	}
 
 	var user model.User
 
 	err = json.Unmarshal(jsonData, &user)
 	if err != nil {
-		// TODO: Handler api errors
+		c.JSON(http.StatusBadRequest,
+			apierrors.NewBadRequestApiError("Bad Request - Failed to unmarshal request body"))
+		return
 	}
 
-	response, err := controller.createUser.Execute(user)
+	response, apiError := controller.createUser.Execute(user)
 
-	if err != nil {
-		// TODO: Handler api errors
-		// c.JSON(err.Status())
+	if apiError != nil {
+		c.JSON(int(apiError.Status()),
+			apiError)
+		return
 	}
 	c.JSON(http.StatusCreated, response)
 }

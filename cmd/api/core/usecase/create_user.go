@@ -1,13 +1,13 @@
 package usecase
 
 import (
-	"log"
 	"social-go/cmd/api/core/model"
 	"social-go/cmd/api/persistence"
+	apierrors "social-go/cmd/api/utils/err"
 )
 
 type CreateUserUseCase interface {
-	Execute(user string) string
+	Execute(user string) (string, apierrors.ApiError)
 }
 
 type CreateUser struct {
@@ -20,12 +20,12 @@ func NewCreateUser(userDao persistence.UserDao) *CreateUser {
 	}
 }
 
-func (createUser *CreateUser) Execute(user model.User) (*model.User, error) {
+func (createUser *CreateUser) Execute(user model.User) (*model.User, apierrors.ApiError) {
 
 	userCreated, err := createUser.userDao.Save(&user)
 
 	if err != nil {
-		log.Fatal("Error to create a new user")
+		return nil, err
 	}
 
 	return userCreated, nil
