@@ -3,7 +3,6 @@ package app
 import "github.com/gin-gonic/gin"
 
 func MapRoutes(r *gin.Engine, controller *Controllers) {
-	r.GET("/ping", controller.Ping.Ping)
 
 	// Users
 	r.POST("/user", controller.User.CreateUser)
