@@ -8,18 +8,17 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-func NewConnectionDB() (*gorm.DB, error) {
+func NewConnectionDB() *gorm.DB {
 	connectionData := GetConnectionDatabase()
 
 	fmt.Println(connectionData)
 	client, dbError := gorm.Open(connectionData.Dialect, GetConnectionString(connectionData))
 
 	if dbError != nil {
-		// TODO: Handling error
 		log.Fatal("Error to connect in database")
 	}
 
 	client.SingularTable(true)
 
-	return client, nil
+	return client
 }
