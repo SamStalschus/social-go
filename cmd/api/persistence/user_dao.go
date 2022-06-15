@@ -1,8 +1,6 @@
 package persistence
 
 import (
-	"errors"
-	"log"
 	"social-go/cmd/api/core/model"
 	apierrors "social-go/cmd/api/utils/err"
 	"time"
@@ -47,46 +45,23 @@ func (userDao *UserDao) Save(userToSave *model.User) (*model.User, apierrors.Api
 	return parseEntity(newUser), nil
 }
 
-func (userDao *UserDao) Update(userToUpdate *model.User) (*model.User, error) {
+func (userDao *UserDao) Update(userToUpdate *model.User) (*model.User, apierrors.ApiError) {
 	var user user
 
-	// var dbError APIERROR
+	var dbError apierrors.ApiError
 
 	err := userDao.db.First(&user, userToUpdate.ID).Error
 	switch {
 	case gorm.IsRecordNotFoundError(err):
-		// TODO: Error handling
-		// DBERROR
-		log.Fatal("User not found!")
+		dbError = apierrors.NewNotFoundApiError("User not found!")
 	case err != nil:
-		// TODO: Error handling
-		// DBERROR
-		log.Fatal("Error to finding user!")
+		dbError = apierrors.NewBadRequestApiError("Error to finding user!")
 	default:
 		user.Name = userToUpdate.Name
 		user.Username = userToUpdate.Username
 		if err = userDao.db.Save(&user).Error; err != nil {
-			// TODO: Error handling
-			log.Fatal("Error to finding user!")
+			dbError = apierrors.NewBadRequestApiError("Error to update user!")
 		}
-	}
-
-	// if dbError != nil {
-	// 	return nil, dbError
-	// }
-
-	return parseEntity(&user), nil
-}
-
-func (userDao *UserDao) Get(id int) (*model.User, error) {
-	var user user
-
-	var dbError error
-
-	if err := userDao.db.First(&user, id).Error; gorm.IsRecordNotFoundError(err) {
-		dbError = errors.New("Error handling")
-	} else if err != nil {
-		dbError = errors.New("Error handling")
 	}
 
 	if dbError != nil {
@@ -94,7 +69,24 @@ func (userDao *UserDao) Get(id int) (*model.User, error) {
 	}
 
 	return parseEntity(&user), nil
+}
 
+func (userDao *UserDao) Get(id int) (*model.User, apierrors.ApiError) {
+	var user user
+
+	var dbError apierrors.ApiError
+
+	if err := userDao.db.First(&user, id).Error; gorm.IsRecordNotFoundError(err) {
+		dbError = apierrors.NewNotFoundApiError("User not found!")
+	} else if err != nil {
+		dbError = apierrors.NewBadRequestApiError("Error to finding user!")
+	}
+
+	if dbError != nil {
+		return nil, dbError
+	}
+
+	return parseEntity(&user), nil
 }
 
 func parseEntity(row *user) *model.User {

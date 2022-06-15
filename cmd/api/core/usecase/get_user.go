@@ -1,17 +1,32 @@
 package usecase
 
-import "fmt"
+import (
+	"social-go/cmd/api/core/model"
+	"social-go/cmd/api/persistence"
+	apierrors "social-go/cmd/api/utils/err"
+)
 
 type GetUserUseCase interface {
 	Execute(user string)
 }
 
-type GetUser struct{}
-
-func NewGetUser() *CreateUser {
-	return &CreateUser{}
+type GetUser struct {
+	userDao persistence.UserDao
 }
 
-func (GetUser *GetUser) Execute() {
-	fmt.Println("User")
+func NewGetUser(userDao persistence.UserDao) *GetUser {
+	return &GetUser{
+		userDao: userDao,
+	}
+}
+
+func (getUser *GetUser) Execute(id int) (*model.User, apierrors.ApiError) {
+
+	user, err := getUser.userDao.Get(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
 }

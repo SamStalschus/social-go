@@ -19,7 +19,9 @@ func InitializeHandlers() *Controllers {
 
 	createUser := usecase.NewCreateUser(*userDao)
 
+	getUser := usecase.NewGetUser(*userDao)
+
 	return &Controllers{
-		User: entrypoint.NewUserController(*createUser),
+		User: entrypoint.NewUserController(*createUser, *getUser),
 	}
 }

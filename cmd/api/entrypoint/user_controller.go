@@ -7,6 +7,7 @@ import (
 	"social-go/cmd/api/core/model"
 	"social-go/cmd/api/core/usecase"
 	apierrors "social-go/cmd/api/utils/err"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,9 +20,10 @@ type UserController struct {
 	deleteUser usecase.DeleteUser
 }
 
-func NewUserController(createUser usecase.CreateUser) *UserController {
+func NewUserController(createUser usecase.CreateUser, getUser usecase.GetUser) *UserController {
 	return &UserController{
 		createUser: createUser,
+		getUser:    getUser,
 	}
 }
 
@@ -54,7 +56,21 @@ func (controller *UserController) CreateUser(c *gin.Context) {
 }
 
 func (controller *UserController) GetUser(c *gin.Context) {
-	controller.getUser.Execute()
+	receivedId := c.Param("id")
+
+	id, err := strconv.Atoi(receivedId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, apierrors.NewBadRequestApiError("Error to get id of user"))
+	}
+
+	user, apiError := controller.getUser.Execute(id)
+
+	if apiError != nil {
+		c.JSON(int(apiError.Status()),
+			apiError)
+		return
+	}
+	c.JSON(http.StatusOK, user)
 }
 
 func (controller *UserController) GetUsers(c *gin.Context) {
