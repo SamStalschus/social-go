@@ -4,6 +4,8 @@ import (
 	"social-go/cmd/api/core/model"
 	"social-go/cmd/api/persistence"
 	apierrors "social-go/cmd/api/utils/err"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type CreateUserUseCase interface {
@@ -21,11 +23,17 @@ func NewCreateUser(userDao persistence.UserDao) *CreateUser {
 }
 
 func (createUser *CreateUser) Execute(user model.User) (*model.User, apierrors.ApiError) {
-
-	userCreated, err := createUser.userDao.Save(&user)
-
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, err
+		return nil, apierrors.NewInternalServerError()
+	}
+
+	user.Password = string(passwordHash)
+
+	userCreated, apiErr := createUser.userDao.Save(&user)
+
+	if apiErr != nil {
+		return nil, apiErr
 	}
 
 	return userCreated, nil

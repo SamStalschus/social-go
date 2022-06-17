@@ -127,7 +127,7 @@ func parseEntity(row *user) *model.User {
 		CreatedAt: row.CreatedAt,
 		Name:      row.Name,
 		Username:  row.Username,
-		Password:  row.Password,
+		Password:  "",
 		Email:     row.Email,
 	}
 }
