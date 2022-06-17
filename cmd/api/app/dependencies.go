@@ -18,10 +18,10 @@ func InitializeHandlers() *Controllers {
 	userDao := persistence.NewUserDao(db)
 
 	createUser := usecase.NewCreateUser(*userDao)
-
 	getUser := usecase.NewGetUser(*userDao)
+	updateUser := usecase.NewUpdateUser(*userDao)
 
 	return &Controllers{
-		User: entrypoint.NewUserController(*createUser, *getUser),
+		User: entrypoint.NewUserController(*createUser, *getUser, *updateUser),
 	}
 }
