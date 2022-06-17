@@ -18,6 +18,8 @@ type apiErr struct {
 	ErrorStatus  uint   `json:"status"`
 }
 
+const INTERNAL_SERVER_ERROR = "Internal server error"
+
 func (err apiErr) Code() string {
 	return err.ErrorCode
 }
@@ -44,4 +46,8 @@ func NewNotFoundApiError(message string) ApiError {
 
 func NewBadRequestApiError(message string) ApiError {
 	return apiErr{message, "bad_request", http.StatusBadRequest}
+}
+
+func NewInternalServerError() ApiError {
+	return apiErr{INTERNAL_SERVER_ERROR, "internal_error", http.StatusInternalServerError}
 }

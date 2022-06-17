@@ -1,17 +1,30 @@
 package usecase
 
-import "fmt"
+import (
+	"social-go/cmd/api/persistence"
+	apierrors "social-go/cmd/api/utils/err"
+)
 
 type DeleteUserUseCase interface {
 	Execute(user string)
 }
 
-type DeleteUser struct{}
-
-func NewDeleteUsers() *DeleteUser {
-	return &DeleteUser{}
+type DeleteUser struct {
+	userDao persistence.UserDao
 }
 
-func (deleteUser *DeleteUser) Execute() {
-	fmt.Println("Delete users")
+func NewDeleteUsers(userDao persistence.UserDao) *DeleteUser {
+	return &DeleteUser{
+		userDao: userDao,
+	}
+}
+
+func (deleteUser *DeleteUser) Execute(id int) apierrors.ApiError {
+	err := deleteUser.userDao.DeleteById(id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

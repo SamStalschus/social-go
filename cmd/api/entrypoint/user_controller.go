@@ -23,12 +23,16 @@ type UserController struct {
 func NewUserController(
 	createUser usecase.CreateUser,
 	getUser usecase.GetUser,
-	updateUser usecase.UpdateUser) *UserController {
+	getUsers usecase.GetUsers,
+	updateUser usecase.UpdateUser,
+	deleteUser usecase.DeleteUser) *UserController {
 
 	return &UserController{
 		createUser: createUser,
 		getUser:    getUser,
 		updateUser: updateUser,
+		getUsers:   getUsers,
+		deleteUser: deleteUser,
 	}
 }
 
@@ -105,9 +109,30 @@ func (controller *UserController) UpdateUser(c *gin.Context) {
 }
 
 func (controller *UserController) GetUsers(c *gin.Context) {
-	controller.getUsers.Execute()
+	response, err := controller.getUsers.Execute()
+
+	if err != nil {
+		c.JSON(int(err.Status()),
+			err)
+		return
+	}
+	c.JSON(http.StatusOK, response)
 }
 
 func (controller *UserController) DeleteUser(c *gin.Context) {
-	controller.deleteUser.Execute()
+	receivedId := c.Param("id")
+
+	id, err := strconv.Atoi(receivedId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, apierrors.NewBadRequestApiError("Error to get id of user"))
+	}
+
+	apiError := controller.deleteUser.Execute(id)
+
+	if apiError != nil {
+		c.JSON(int(apiError.Status()),
+			apiError)
+		return
+	}
+	c.Status(http.StatusNoContent)
 }

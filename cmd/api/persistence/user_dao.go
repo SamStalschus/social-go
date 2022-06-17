@@ -73,7 +73,6 @@ func (userDao *UserDao) Update(userToUpdate *model.User) (*model.User, apierrors
 
 func (userDao *UserDao) Get(id int) (*model.User, apierrors.ApiError) {
 	var user user
-
 	var dbError apierrors.ApiError
 
 	if err := userDao.db.First(&user, id).Error; gorm.IsRecordNotFoundError(err) {
@@ -87,6 +86,39 @@ func (userDao *UserDao) Get(id int) (*model.User, apierrors.ApiError) {
 	}
 
 	return parseEntity(&user), nil
+}
+
+func (userDao *UserDao) GetAll() (*[]model.User, apierrors.ApiError) {
+	var usersDao []user
+	var users []model.User
+
+	if err := userDao.db.Find(&usersDao).Error; err != nil {
+		return nil, apierrors.NewInternalServerError()
+	}
+
+	for _, user := range usersDao {
+		users = append(users, *parseEntity(&user))
+	}
+
+	return &users, nil
+}
+
+func (userDao *UserDao) DeleteById(id int) apierrors.ApiError {
+	var user user
+
+	err := userDao.db.First(&user, id).Error
+	switch {
+	case gorm.IsRecordNotFoundError(err):
+		return apierrors.NewNotFoundApiError("User not found!")
+	case err != nil:
+		return apierrors.NewBadRequestApiError("Error to delete user!")
+	default:
+		if err = userDao.db.Delete(&user, id).Error; err != nil {
+			return apierrors.NewBadRequestApiError("Error to delete user!")
+		}
+	}
+
+	return nil
 }
 
 func parseEntity(row *user) *model.User {
