@@ -8,6 +8,7 @@ import (
 
 type Controllers struct {
 	User *entrypoint.UserController
+	Auth *entrypoint.AuthController
 }
 
 // InitializeHandlers func initialize all handlers and dependencies of app
@@ -25,5 +26,6 @@ func InitializeHandlers() *Controllers {
 
 	return &Controllers{
 		User: entrypoint.NewUserController(*createUser, *getUser, *getUsers, *updateUser, *deleteUser),
+		Auth: entrypoint.NewAuthController(),
 	}
 }
