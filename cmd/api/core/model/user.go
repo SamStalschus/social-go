@@ -11,3 +11,9 @@ type User struct {
 	Password  string    `json:"password,omitempty"`
 	CreatedAt time.Time `json:"created_at,omitempty"`
 }
+
+// AuthUser represent data of user authenticate
+type AuthUser struct {
+	Username string
+	Password string
+}

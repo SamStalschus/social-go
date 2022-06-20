@@ -88,6 +88,30 @@ func (userDao *UserDao) Get(id int) (*model.User, apierrors.ApiError) {
 	return parseEntity(&user), nil
 }
 
+func (userDao *UserDao) GetByUsernameWithPassword(username string) (*model.User, apierrors.ApiError) {
+	var user user
+	var dbError apierrors.ApiError
+
+	if err := userDao.db.Where("username = ?", username).First(&user).Error; gorm.IsRecordNotFoundError(err) {
+		dbError = apierrors.NewNotFoundApiError("User not found!")
+	} else if err != nil {
+		dbError = apierrors.NewBadRequestApiError("Error to finding user!")
+	}
+
+	if dbError != nil {
+		return nil, dbError
+	}
+
+	return &model.User{
+		ID:        user.ID,
+		CreatedAt: user.CreatedAt,
+		Name:      user.Name,
+		Username:  user.Username,
+		Password:  user.Password,
+		Email:     user.Email,
+	}, nil
+}
+
 func (userDao *UserDao) GetAll() (*[]model.User, apierrors.ApiError) {
 	var usersDao []user
 	var users []model.User
