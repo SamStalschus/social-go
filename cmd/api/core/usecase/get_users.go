@@ -7,7 +7,7 @@ import (
 )
 
 type GetUsersUseCase interface {
-	Execute(user string)
+	Execute() (*[]model.User, apierrors.ApiError)
 }
 
 type GetUsers struct {

@@ -9,7 +9,7 @@ import (
 )
 
 type CreateUserUseCase interface {
-	Execute(user string) (string, apierrors.ApiError)
+	Execute(user model.User) (*model.User, apierrors.ApiError)
 }
 
 type CreateUser struct {

@@ -13,19 +13,19 @@ import (
 )
 
 type UserController struct {
-	createUser usecase.CreateUser
-	getUser    usecase.GetUser
-	getUsers   usecase.GetUsers
-	updateUser usecase.UpdateUser
-	deleteUser usecase.DeleteUser
+	createUser usecase.CreateUserUseCase
+	getUser    usecase.GetUserUseCase
+	getUsers   usecase.GetUsersUseCase
+	updateUser usecase.UpdateUserUseCase
+	deleteUser usecase.DeleteUserUseCase
 }
 
 func NewUserController(
-	createUser usecase.CreateUser,
-	getUser usecase.GetUser,
-	getUsers usecase.GetUsers,
-	updateUser usecase.UpdateUser,
-	deleteUser usecase.DeleteUser) *UserController {
+	createUser usecase.CreateUserUseCase,
+	getUser usecase.GetUserUseCase,
+	getUsers usecase.GetUsersUseCase,
+	updateUser usecase.UpdateUserUseCase,
+	deleteUser usecase.DeleteUserUseCase) *UserController {
 
 	return &UserController{
 		createUser: createUser,

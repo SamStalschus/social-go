@@ -7,7 +7,7 @@ import (
 )
 
 type UpdateUserUseCase interface {
-	Execute(user string)
+	Execute(user *model.User) (*model.User, apierrors.ApiError)
 }
 
 type UpdateUser struct {

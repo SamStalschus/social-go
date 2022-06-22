@@ -6,7 +6,7 @@ import (
 )
 
 type DeleteUserUseCase interface {
-	Execute(user string)
+	Execute(id int) apierrors.ApiError
 }
 
 type DeleteUser struct {
