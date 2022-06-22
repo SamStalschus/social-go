@@ -6,6 +6,7 @@ import (
 	"os"
 	"social-go/cmd/api/app"
 	"social-go/cmd/api/config"
+	"social-go/cmd/api/utils/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -30,7 +31,9 @@ func run(port string) error {
 
 	handlers := app.InitializeHandlers()
 
-	router := gin.Default()
+	router := gin.New()
+
+	router.Use(middleware.GinErrorInterceptor())
 
 	app.MapRoutes(router, handlers)
 
