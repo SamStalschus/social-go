@@ -25,7 +25,7 @@ func InitializeHandlers() *Controllers {
 	deleteUser := usecase.NewDeleteUsers(*userDao)
 
 	return &Controllers{
-		User: entrypoint.NewUserController(*createUser, *getUser, *getUsers, *updateUser, *deleteUser),
+		User: entrypoint.NewUserController(createUser, getUser, getUsers, updateUser, deleteUser),
 		Auth: entrypoint.NewAuthController(),
 	}
 }
