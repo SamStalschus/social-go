@@ -13,7 +13,7 @@ import (
 )
 
 type GenTokenUseCase interface {
-	Execute(ctx context.Context, authUser model.AuthUser) (string, apierrors.ApiError)
+	Execute(ctx context.Context, authUser model.AuthUser) (*model.Token, apierrors.ApiError)
 }
 
 type GenToken struct {
@@ -26,25 +26,25 @@ func NewGenTokenUseCase(userDao persistence.UserDao) *GenToken {
 	}
 }
 
-func (genToken *GenToken) Execute(ctx context.Context, authUser model.AuthUser) (string, apierrors.ApiError) {
+func (genToken *GenToken) Execute(ctx context.Context, authUser model.AuthUser) (*model.Token, apierrors.ApiError) {
 
 	if authUser.Username == "" || authUser.Password == "" {
-		return "", apierrors.NewBadRequestApiError("Username or password incorrect.")
+		return nil, apierrors.NewBadRequestApiError("Username or password incorrect.")
 	}
 
 	user, err := genToken.userDao.GetByUsernameWithPassword(ctx, authUser.Username)
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	if !passwordIsCorrect(authUser.Password, user.Password) {
-		return "", apierrors.NewBadRequestApiError("Username or password incorrect.")
+		return nil, apierrors.NewBadRequestApiError("Username or password incorrect.")
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"iss": "social-go",
-		"sub": user,
+		"sub": user.ID,
 		"aud": "any",
 		"exp": time.Now().Add(time.Minute * 5).Unix(),
 	})
@@ -52,10 +52,10 @@ func (genToken *GenToken) Execute(ctx context.Context, authUser model.AuthUser) 
 	jwtToken, errJwt := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
 
 	if errJwt != nil {
-		return "", apierrors.NewInternalServerError()
+		return nil, apierrors.NewInternalServerError()
 	}
 
-	return jwtToken, nil
+	return &model.Token{Token: jwtToken, User: model.UserToken{Username: user.Username}}, nil
 }
 
 func passwordIsCorrect(passwordProvided, password string) bool {

@@ -12,11 +12,13 @@ import (
 )
 
 type AuthController struct {
-	genToken usecase.GenToken
+	genToken usecase.GenTokenUseCase
 }
 
-func NewAuthController() *AuthController {
-	return &AuthController{}
+func NewAuthController(genToken usecase.GenTokenUseCase) *AuthController {
+	return &AuthController{
+		genToken: genToken,
+	}
 }
 
 func (controller *AuthController) GenToken(c *gin.Context) {

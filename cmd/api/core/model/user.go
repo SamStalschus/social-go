@@ -14,6 +14,15 @@ type User struct {
 
 // AuthUser represent data of user authenticate
 type AuthUser struct {
-	Username string
-	Password string
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type Token struct {
+	Token string    `json:"token"`
+	User  UserToken `json:"user"`
+}
+
+type UserToken struct {
+	Username string `json:"username"`
 }
