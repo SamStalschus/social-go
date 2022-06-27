@@ -1,6 +1,7 @@
 package persistence
 
 import (
+	"context"
 	"social-go/cmd/api/core/model"
 	apierrors "social-go/cmd/api/utils/err"
 	"time"
@@ -28,7 +29,7 @@ func NewUserDao(db *gorm.DB) *UserDao {
 	}
 }
 
-func (userDao *UserDao) Save(userToSave *model.User) (*model.User, apierrors.ApiError) {
+func (userDao *UserDao) Save(ctx context.Context, userToSave *model.User) (*model.User, apierrors.ApiError) {
 
 	newUser := &user{
 		CreatedAt: time.Now(),
@@ -45,7 +46,7 @@ func (userDao *UserDao) Save(userToSave *model.User) (*model.User, apierrors.Api
 	return parseEntity(newUser), nil
 }
 
-func (userDao *UserDao) Update(userToUpdate *model.User) (*model.User, apierrors.ApiError) {
+func (userDao *UserDao) Update(ctx context.Context, userToUpdate *model.User) (*model.User, apierrors.ApiError) {
 	var user user
 
 	var dbError apierrors.ApiError
@@ -71,7 +72,7 @@ func (userDao *UserDao) Update(userToUpdate *model.User) (*model.User, apierrors
 	return parseEntity(&user), nil
 }
 
-func (userDao *UserDao) Get(id int) (*model.User, apierrors.ApiError) {
+func (userDao *UserDao) Get(ctx context.Context, id int) (*model.User, apierrors.ApiError) {
 	var user user
 	var dbError apierrors.ApiError
 
@@ -88,7 +89,7 @@ func (userDao *UserDao) Get(id int) (*model.User, apierrors.ApiError) {
 	return parseEntity(&user), nil
 }
 
-func (userDao *UserDao) GetByUsernameWithPassword(username string) (*model.User, apierrors.ApiError) {
+func (userDao *UserDao) GetByUsernameWithPassword(ctx context.Context, username string) (*model.User, apierrors.ApiError) {
 	var user user
 	var dbError apierrors.ApiError
 
@@ -112,7 +113,7 @@ func (userDao *UserDao) GetByUsernameWithPassword(username string) (*model.User,
 	}, nil
 }
 
-func (userDao *UserDao) GetAll() (*[]model.User, apierrors.ApiError) {
+func (userDao *UserDao) GetAll(ctx context.Context) (*[]model.User, apierrors.ApiError) {
 	var usersDao []user
 	var users []model.User
 
@@ -127,7 +128,7 @@ func (userDao *UserDao) GetAll() (*[]model.User, apierrors.ApiError) {
 	return &users, nil
 }
 
-func (userDao *UserDao) DeleteById(id int) apierrors.ApiError {
+func (userDao *UserDao) DeleteById(ctx context.Context, id int) apierrors.ApiError {
 	var user user
 
 	err := userDao.db.First(&user, id).Error

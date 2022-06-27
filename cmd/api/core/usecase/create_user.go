@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"social-go/cmd/api/core/model"
 	"social-go/cmd/api/persistence"
 	apierrors "social-go/cmd/api/utils/err"
@@ -9,7 +10,7 @@ import (
 )
 
 type CreateUserUseCase interface {
-	Execute(user model.User) (*model.User, apierrors.ApiError)
+	Execute(ctx context.Context, user model.User) (*model.User, apierrors.ApiError)
 }
 
 type CreateUser struct {
@@ -22,7 +23,7 @@ func NewCreateUser(userDao persistence.UserDao) *CreateUser {
 	}
 }
 
-func (createUser *CreateUser) Execute(user model.User) (*model.User, apierrors.ApiError) {
+func (createUser *CreateUser) Execute(ctx context.Context, user model.User) (*model.User, apierrors.ApiError) {
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, apierrors.NewInternalServerError()
@@ -30,7 +31,7 @@ func (createUser *CreateUser) Execute(user model.User) (*model.User, apierrors.A
 
 	user.Password = string(passwordHash)
 
-	userCreated, apiErr := createUser.userDao.Save(&user)
+	userCreated, apiErr := createUser.userDao.Save(ctx, &user)
 
 	if apiErr != nil {
 		return nil, apiErr

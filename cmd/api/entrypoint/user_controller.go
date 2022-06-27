@@ -37,6 +37,8 @@ func NewUserController(
 }
 
 func (controller *UserController) CreateUser(c *gin.Context) {
+	ctx := c.Request.Context()
+
 	jsonData, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		c.JSON(http.StatusBadRequest,
@@ -53,7 +55,7 @@ func (controller *UserController) CreateUser(c *gin.Context) {
 		return
 	}
 
-	response, apiError := controller.createUser.Execute(user)
+	response, apiError := controller.createUser.Execute(ctx, user)
 
 	if apiError != nil {
 		c.JSON(int(apiError.Status()),
@@ -64,6 +66,8 @@ func (controller *UserController) CreateUser(c *gin.Context) {
 }
 
 func (controller *UserController) GetUser(c *gin.Context) {
+	ctx := c.Request.Context()
+
 	receivedId := c.Param("id")
 
 	id, err := strconv.Atoi(receivedId)
@@ -71,7 +75,7 @@ func (controller *UserController) GetUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, apierrors.NewBadRequestApiError("Error to get id of user"))
 	}
 
-	user, apiError := controller.getUser.Execute(id)
+	user, apiError := controller.getUser.Execute(ctx, id)
 
 	if apiError != nil {
 		c.JSON(int(apiError.Status()),
@@ -82,6 +86,8 @@ func (controller *UserController) GetUser(c *gin.Context) {
 }
 
 func (controller *UserController) UpdateUser(c *gin.Context) {
+	ctx := c.Request.Context()
+
 	jsonData, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		c.JSON(http.StatusBadRequest,
@@ -98,7 +104,7 @@ func (controller *UserController) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	response, apiError := controller.updateUser.Execute(&user)
+	response, apiError := controller.updateUser.Execute(ctx, &user)
 
 	if apiError != nil {
 		c.JSON(int(apiError.Status()),
@@ -109,7 +115,9 @@ func (controller *UserController) UpdateUser(c *gin.Context) {
 }
 
 func (controller *UserController) GetUsers(c *gin.Context) {
-	response, err := controller.getUsers.Execute()
+	ctx := c.Request.Context()
+
+	response, err := controller.getUsers.Execute(ctx)
 
 	if err != nil {
 		c.JSON(int(err.Status()),
@@ -120,6 +128,8 @@ func (controller *UserController) GetUsers(c *gin.Context) {
 }
 
 func (controller *UserController) DeleteUser(c *gin.Context) {
+	ctx := c.Request.Context()
+
 	receivedId := c.Param("id")
 
 	id, err := strconv.Atoi(receivedId)
@@ -127,7 +137,7 @@ func (controller *UserController) DeleteUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, apierrors.NewBadRequestApiError("Error to get id of user"))
 	}
 
-	apiError := controller.deleteUser.Execute(id)
+	apiError := controller.deleteUser.Execute(ctx, id)
 
 	if apiError != nil {
 		c.JSON(int(apiError.Status()),

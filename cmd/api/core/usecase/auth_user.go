@@ -32,7 +32,7 @@ func (genToken *GenToken) Execute(ctx context.Context, authUser model.AuthUser) 
 		return "", apierrors.NewBadRequestApiError("Username or password incorrect.")
 	}
 
-	user, err := genToken.userDao.GetByUsernameWithPassword(authUser.Username)
+	user, err := genToken.userDao.GetByUsernameWithPassword(ctx, authUser.Username)
 
 	if err != nil {
 		return "", err

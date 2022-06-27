@@ -1,13 +1,14 @@
 package usecase
 
 import (
+	"context"
 	"social-go/cmd/api/core/model"
 	"social-go/cmd/api/persistence"
 	apierrors "social-go/cmd/api/utils/err"
 )
 
 type UpdateUserUseCase interface {
-	Execute(user *model.User) (*model.User, apierrors.ApiError)
+	Execute(ctx context.Context, user *model.User) (*model.User, apierrors.ApiError)
 }
 
 type UpdateUser struct {
@@ -20,8 +21,8 @@ func NewUpdateUser(userDao persistence.UserDao) *UpdateUser {
 	}
 }
 
-func (updateUser *UpdateUser) Execute(user *model.User) (*model.User, apierrors.ApiError) {
-	userUpdated, err := updateUser.userDao.Update(user)
+func (updateUser *UpdateUser) Execute(ctx context.Context, user *model.User) (*model.User, apierrors.ApiError) {
+	userUpdated, err := updateUser.userDao.Update(ctx, user)
 
 	if err != nil {
 		return nil, err
