@@ -18,11 +18,13 @@ type AuthUser struct {
 	Password string `json:"password"`
 }
 
+// Token represent data token to return
 type Token struct {
 	Token string    `json:"token"`
 	User  UserToken `json:"user"`
 }
 
+// UserToken represent data token of user
 type UserToken struct {
 	Username string `json:"username"`
 }

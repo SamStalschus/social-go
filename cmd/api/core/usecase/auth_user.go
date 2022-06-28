@@ -20,6 +20,14 @@ type GenToken struct {
 	userDao persistence.UserDao
 }
 
+// type Claims struct {
+// 	iss string
+// 	sub uint64
+// 	aud string
+// 	exp int64
+// 	jwt.StandardClaims
+// }
+
 func NewGenTokenUseCase(userDao persistence.UserDao) *GenToken {
 	return &GenToken{
 		userDao: userDao,
