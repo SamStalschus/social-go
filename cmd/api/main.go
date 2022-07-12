@@ -2,15 +2,16 @@ package main
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"log"
 	"os"
 	"social-go/cmd/api/app"
 	"social-go/cmd/api/config"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
+
+	config.SetupEnvironment()
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -21,12 +22,10 @@ func main() {
 		log.Fatal("Error to start server on port: " + port)
 	}
 
-	fmt.Println("Listening on port 3000...")
+	fmt.Println("Listening on port", port)
 }
 
 func run(port string) error {
-
-	config.SetupEnvironment()
 
 	handlers, middlewares := app.InitializeHandlers()
 
